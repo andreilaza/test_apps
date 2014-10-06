@@ -5,15 +5,21 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
 		<script type="text/javascript" src="includes/js/index.js"></script>
 	</head>
-	<body ng-app="App"> 
-		<div ng-controller="ctrl_app1">
-			<p>{{ srv.number }}</p>
-			<input type="button" ng-click="testService()" value="testMe"/>
+	<body  ng-app="ics_zero" ng-number="1"> 
+
+	    <!-- first fucking controller -->
+		<div ng-controller="player-controller">
+			<label for="player1_simbol">Player 1 symbol : </label>
+			<!-- Two way binding [ng-model], One way binding [ {{ }} ] -->
+			<input type="text" name="player1_simbol" ng-model="players[0].playerSimbol"/><br/>
+			<label for="player2_simbol">Player 2 symbol :</label>
+			<input type="text" name="player2_simbol" ng-model="players[1].playerSimbol"/>
 		</div>
-		<div ng-controller="ctrl_app2">
-			<p> {{ anotherNumber.number }}</p>
-			<input type="button" ng-click="testAgain()" value="testMeAgain"/>
-		<div>
+
+		<!-- second fucking controller -->
+		<div class="board" ng-controller="board-controller" >
+			<div class="tile size" ng-repeat='tile in tiles' tvalue>  
 		</div>
+
 	</body>
 </html>

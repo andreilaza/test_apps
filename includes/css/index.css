@@ -1,6 +1,25 @@
-.button {
+.board {
 	display:block;
-	width : 30px;
-	height:20px;
-	border-style:solid;
+	width:210px;
+	height:210px;
+	margin-right:auto;
+	margin-left:auto;
+	margin-top:150px;
+	background-color:#1A3467;
+}
+.size {
+	display:block;
+	width:60px;
+	height:60px;
+}
+.tile {
+	margin:5px;
+	float:right;
+	background-color: #E0E0CF;
+	border-radius:5px;
+}
+.tile > span {
+	text-align:center;
+	padding-top:10px;
+	font-size:30px;
 }
