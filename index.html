@@ -1,0 +1,19 @@
+<!DOCTYPE>
+<html>
+	<head>
+		<link rel="stylesheet" href="includes/css/index.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+		<script type="text/javascript" src="includes/js/index.js"></script>
+	</head>
+	<body ng-app="App"> 
+		<div ng-controller="ctrl_app1">
+			<p>{{ srv.number }}</p>
+			<input type="button" ng-click="testService()" value="testMe"/>
+		</div>
+		<div ng-controller="ctrl_app2">
+			<p> {{ anotherNumber.number }}</p>
+			<input type="button" ng-click="testAgain()" value="testMeAgain"/>
+		<div>
+		</div>
+	</body>
+</html>
