@@ -1,4 +1,5 @@
-var game = angular.module("ics_zero",[]);
+// we need ui.router to use routes
+var game = angular.module("ics_zero",['ui.router']);
 
 game.factory('tiles',[ function() {
 	var tiles = [];
@@ -10,7 +11,6 @@ game.factory('tiles',[ function() {
 	}
 	return tiles;
 }]);
-
 game.factory('players',[ function() {
 	return {
         totalPlayers: [{
@@ -25,17 +25,64 @@ game.factory('players',[ function() {
         };
     }]);
 
-// This shit maganes player turns 
-game.controller("player-controller",["$scope", "players", function($scope, players) {
-	$scope.players = players.totalPlayers;
-	// @TO-DO : on event thrown at line46, execute function
-	$scope.nextPlayer = function() {
-		players.currentPlayer = ( players.currentPlayer == 2 ) ? 1 : 2;
+
+// II - let's start define our router app links
+game.config(function($stateProvider, $urlRouterProvider) {
+
+    $urlRouterProvider.otherwise('404');
+
+    $stateProvider
+        .state('game', {
+            abstract: true,
+            url: '/home',
+            templateUrl: 'includes/views/home.html',
+            controller: "logic-controller",
+        })
+        .state('game.settings', {
+        	url: '/settings',
+        	templateUrl: 'includes/views/player_settings.html',
+        	controller : 'player-controller',
+            // we'll get to this in a bit       
+        })
+        .state('game.play', {
+        	url: '/play',
+        	templateUrl: 'includes/views/game.html',
+        	controller : 'board-controller',
+            // we'll get to this in a bit       
+        })
+        .state('404', {
+        	url: '/404',
+        	templateUrl: 'includes/views/error.html',
+            // we'll get to this in a bit       
+        });
+});
+
+game.controller("logic-controller",["$scope","players","tiles", function($scope,$players,$tiles){
+
+	console.log("logic-controller");
+
+	$scope.doSomeLogic = function() {
+		// check to see if player wins, notify and reset game
+		// else change turn
+		// 
 	}
+}]);
+
+// This shit manages player turns 
+game.controller("player-controller",["$scope", "players", function($scope, players) {
+
+	console.log("player-controller");
+
+	$scope.changePlayerTurn = function() {
+		players.currentPlayer = ( players.currentPlayer == 2 ) ? 1 : 2;
+	};
 }]);
 
 // This shit represents the board on which you can play
 game.controller("board-controller",["$scope","tiles","players", function($scope, tiles, players) {
+
+	console.log("board-controller");
+
 	$scope.tiles = tiles;
 	$scope.players = players;
 	$scope.addValue = function(tileNumber) {
@@ -43,16 +90,19 @@ game.controller("board-controller",["$scope","tiles","players", function($scope,
 		tileNumber = parseInt(tileNumber);
 		if ( tiles[tileNumber].player == -1 ) {
 			$scope.tiles[tileNumber].player =  1;
-			//@ TO-DO : throw event to line 31
 		}
 	}
+	$scope.checkForWinner = function() {
+		// do shit here
+	};
+	$scope.resetGame = function() {
+		// do another shit here
+	};
 }]);
 
 game.directive("tvalue", function(){
 	return  {
 		restrict: "A",
-		// cacatul asta imi da eroare in consola daca las {{ tile.number }} ..
-		// daca nu folosesc {{ }} nu da eroare dar nu se inlocuieste parametrul cu poprietatea obiectului
     	template: '<span class="size" ng-click="addValue(tile.number)" > {{  players.totalPlayers[tile.player].playerSimbol  }}</span>'
 	}
 });

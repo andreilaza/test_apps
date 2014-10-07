@@ -3,23 +3,15 @@
 	<head>
 		<link rel="stylesheet" href="includes/css/index.css" />
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
 		<script type="text/javascript" src="includes/js/index.js"></script>
 	</head>
 	<body  ng-app="ics_zero" ng-number="1"> 
-
-	    <!-- first fucking controller -->
-		<div ng-controller="player-controller">
-			<label for="player1_simbol">Player 1 symbol : </label>
-			<!-- Two way binding [ng-model], One way binding [ {{ }} ] -->
-			<input type="text" name="player1_simbol" ng-model="players[0].playerSimbol"/><br/>
-			<label for="player2_simbol">Player 2 symbol :</label>
-			<input type="text" name="player2_simbol" ng-model="players[1].playerSimbol"/>
+		<a ui-sref="game.settings">Settings </a> 			<br/>
+		<a ui-sref="game.play">Play</a>						<br/>
+		<a ui-sref="404">Test Error page</a>			    <br/>
+		<div ui-view>
+			
 		</div>
-
-		<!-- second fucking controller -->
-		<div class="board" ng-controller="board-controller" >
-			<div class="tile size" ng-repeat='tile in tiles' tvalue>  
-		</div>
-
 	</body>
 </html>
