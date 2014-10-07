@@ -11,20 +11,41 @@ game.factory('tiles',[ function() {
 	}
 	return tiles;
 }]);
+
 game.factory('players',[ function() {
 	return {
         totalPlayers: [{
-					playerNumber : 1,
+					playerNumber : 0,
 					playerSimbol : 'X'
 				},
 				{
-					playerNumber : 2,
+					playerNumber : 1,
 					playerSimbol : '0'
 				}],
-		currentPlayer : 1
-        };
-    }]);
+		currentPlayer : 0
+    };
+}]);
 
+game.factory('game-logic',[ 'tiles','players',function( tiles, players){
+	return {
+		tiles: tiles,
+		players: players,
+		setTile : function(tileNumber) {
+			tiles[tileNumber].player =  players.currentPlayer;
+		},
+        isWinner: function () {
+        	return false;
+        },
+		changePlayerTurn : function () {
+			players.currentPlayer = ( players.currentPlayer == 1 ) ? 0 : 1;
+		},
+		resetBoard : function() {
+			for ( i = 0 ; i < 9 ; i ++ ) {
+				tiles[i].player = -1;			
+			}
+		},
+    }
+}]);
 
 // II - let's start define our router app links
 game.config(function($stateProvider, $urlRouterProvider) {
@@ -36,71 +57,63 @@ game.config(function($stateProvider, $urlRouterProvider) {
             abstract: true,
             url: '/home',
             templateUrl: 'includes/views/home.html',
-            controller: "logic-controller",
         })
         .state('game.settings', {
         	url: '/settings',
         	templateUrl: 'includes/views/player_settings.html',
-        	controller : 'player-controller',
-            // we'll get to this in a bit       
+        	controller : 'player-controller', 
         })
         .state('game.play', {
         	url: '/play',
         	templateUrl: 'includes/views/game.html',
-        	controller : 'board-controller',
-            // we'll get to this in a bit       
+        	controller : 'board-controller', 
         })
         .state('404', {
         	url: '/404',
         	templateUrl: 'includes/views/error.html',
-            // we'll get to this in a bit       
         });
 });
 
-game.controller("logic-controller",["$scope","players","tiles", function($scope,$players,$tiles){
-
-	console.log("logic-controller");
-
-	$scope.doSomeLogic = function() {
-		// check to see if player wins, notify and reset game
-		// else change turn
-		// 
-	}
-}]);
-
-// This shit manages player turns 
-game.controller("player-controller",["$scope", "players", function($scope, players) {
-
-	console.log("player-controller");
-
-	$scope.changePlayerTurn = function() {
-		players.currentPlayer = ( players.currentPlayer == 2 ) ? 1 : 2;
-	};
+// This shit maganes player turns 
+game.controller("player-controller",["$scope", "players", function( $scope, players) {
+	$scope.players = players.totalPlayers;
 }]);
 
 // This shit represents the board on which you can play
-game.controller("board-controller",["$scope","tiles","players", function($scope, tiles, players) {
+game.controller("board-controller",["$scope","game-logic", function( $scope, game_logic) {
 
-	console.log("board-controller");
+	$scope.tiles = game_logic.tiles;
+	$scope.players = game_logic.players;
+	$scope.occupiedTiles = 0;
+	$scope.newGame = false;
 
-	$scope.tiles = tiles;
-	$scope.players = players;
-	$scope.addValue = function(tileNumber) {
-		// but why ? 
-		tileNumber = parseInt(tileNumber);
-		if ( tiles[tileNumber].player == -1 ) {
-			$scope.tiles[tileNumber].player =  1;
-		}
+	$scope.canStartAgainUpdate = function() {
+		$scope.newGame = ($scope.occupiedTiles > 0) ? true : false;
+		console.log ($scope.newGame);
 	}
-	$scope.checkForWinner = function() {
-		// do shit here
-	};
-	$scope.resetGame = function() {
-		// do another shit here
-	};
+
+	$scope.addValue = function(tileNumber) {
+		tileNumber = parseInt(tileNumber);
+		if ( !game_logic.isWinner() ) {
+			if (game_logic.tiles[tileNumber].player == -1  ) {
+				game_logic.setTile(tileNumber);
+				game_logic.changePlayerTurn();
+				$scope.canStartAgainUpdate();
+				$scope.occupiedTiles++;
+			} else {
+				alert("Please select another tile. It's not nice to try and rape the other player.");
+			}
+		} 
+	}
+
+	$scope.startNewGame = function() {
+		game_logic.resetBoard() ;
+		$scope.newGame = false;
+		$scope.occupiedTiles = 0;
+	}
 }]);
 
-game.directive("tvalue", function(){
+game.directive("tvalue", function() {
 	return  {
 		restrict: "A",
     	template: '<span class="size" ng-click="addValue(tile.number)" > {{  players.totalPlayers[tile.player].playerSimbol  }}</span>'
