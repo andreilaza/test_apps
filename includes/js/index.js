@@ -16,11 +16,17 @@ game.factory('players',[ function() {
 	return {
         totalPlayers: [{
 					playerNumber : 0,
-					playerSimbol : 'X'
+					playerSimbol : 'X',
+					playerColour : {
+						color : "red"
+					}
 				},
 				{
 					playerNumber : 1,
-					playerSimbol : '0'
+					playerSimbol : '0',
+					playerColour : {
+						color : "green"
+					}
 				}],
 		currentPlayer : 0
     };
@@ -34,7 +40,36 @@ game.factory('game-logic',[ 'tiles','players',function( tiles, players){
 			tiles[tileNumber].player =  players.currentPlayer;
 		},
         isWinner: function () {
-        	return false;
+        	isWinner = false;
+        	// horizontal check
+        	for ( i = 2 ; i < 9; i = i + 3 ) {
+        		if ( ( (tiles[i-2].player == tiles[i-1].player ) && 
+        			 ( tiles[i-1].player == tiles[i].player) ) && 
+        			 ( tiles[i].player != -1 ) ) {
+        				isWinner = true;
+        		}
+        	}
+    		// vertical check
+    		for ( i = 0 ; i < 3; i ++ ) {
+        		if ( ( (tiles[i+3].player == tiles[i+6].player ) && 
+        			 ( tiles[i+3].player == tiles[i].player) ) && 
+        			 ( tiles[i].player != -1 ) ) {
+    				isWinner = true;
+    			}
+    		}
+    		// diagonal check
+			if ( ( ( tiles[2].player == tiles[4].player ) && 
+				   ( tiles[4].player == tiles[6].player ) ) && 
+				   ( tiles[2].player != -1 ) ) {
+				isWinner = true;
+			}
+			// subdiagonal check
+			if ( ( ( tiles[0].player == tiles[4].player ) && 
+				   ( tiles[4].player == tiles[8].player ) ) && 
+				   ( tiles[4].player != -1 ) ) {
+				isWinner = true;
+			}
+        	return isWinner;
         },
 		changePlayerTurn : function () {
 			players.currentPlayer = ( players.currentPlayer == 1 ) ? 0 : 1;
@@ -77,11 +112,11 @@ game.config(function($stateProvider, $urlRouterProvider) {
 // This shit maganes player turns 
 game.controller("player-controller",["$scope", "players", function( $scope, players) {
 	$scope.players = players.totalPlayers;
+	$scope.colours = ["red", "green", "black", "blue"]; 
 }]);
 
 // This shit represents the board on which you can play
 game.controller("board-controller",["$scope","game-logic", function( $scope, game_logic) {
-
 	$scope.tiles = game_logic.tiles;
 	$scope.players = game_logic.players;
 	$scope.occupiedTiles = 0;
@@ -89,21 +124,22 @@ game.controller("board-controller",["$scope","game-logic", function( $scope, gam
 
 	$scope.canStartAgainUpdate = function() {
 		$scope.newGame = ($scope.occupiedTiles > 0) ? true : false;
-		console.log ($scope.newGame);
 	}
 
 	$scope.addValue = function(tileNumber) {
 		tileNumber = parseInt(tileNumber);
-		if ( !game_logic.isWinner() ) {
-			if (game_logic.tiles[tileNumber].player == -1  ) {
-				game_logic.setTile(tileNumber);
+		if (game_logic.tiles[tileNumber].player == -1  ) {
+			game_logic.setTile(tileNumber);
+			game_logic.changePlayerTurn();
+			$scope.canStartAgainUpdate();
+			$scope.occupiedTiles++;
+			if ( game_logic.isWinner() ) {
 				game_logic.changePlayerTurn();
-				$scope.canStartAgainUpdate();
-				$scope.occupiedTiles++;
-			} else {
-				alert("Please select another tile. It's not nice to try and rape the other player.");
-			}
-		} 
+				alert("Winner is " + $scope.players.totalPlayers[$scope.players.currentPlayer].playerSimbol);
+			} 
+		} else {
+			alert("Please select another tile. It's not nice trying to rape the other player.");
+		}
 	}
 
 	$scope.startNewGame = function() {
@@ -113,9 +149,22 @@ game.controller("board-controller",["$scope","game-logic", function( $scope, gam
 	}
 }]);
 
+game.filter("excludeColour",["game-logic", function(game_logic){
+	return function(colours,otherPlayer) {
+		var filtered = [];
+	    for (var i = 0; i < colours.length; i++) {
+	      var colour = colours[i];
+	      if ( colour != game_logic.players.totalPlayers[otherPlayer].playerColour.color) {
+	        filtered.push(colour);
+	      }
+	    }
+	    return filtered;
+	}
+}])
+
 game.directive("tvalue", function() {
 	return  {
 		restrict: "A",
-    	template: '<span class="size" ng-click="addValue(tile.number)" > {{  players.totalPlayers[tile.player].playerSimbol  }}</span>'
+    	template: '<span class="size" ng-style="players.totalPlayers[tile.player].playerColour;" ng-click="addValue(tile.number)" > {{  players.totalPlayers[tile.player].playerSimbol  }}</span>'
 	}
 });

@@ -1,6 +1,7 @@
+<h3> Next player : {{ players.totalPlayers[players.currentPlayer].playerSimbol }} </h3>
 <div class="board">
 	<div class="tile size" ng-repeat='tile in tiles' tvalue>  
 	<br/>
 	</div>
-<input type="button" value="New Game" name="vasile" ng-click="startNewGame()" ng-visible="newGame">
+<input type="button" value="New Game" name="vasile" ng-click="startNewGame()" ng-show="newGame">
 </div>

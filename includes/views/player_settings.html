@@ -1,5 +1,19 @@
-<label for="player1_simbol">Player 1 symbol : </label>
-<!-- Two way binding [ng-model], One way binding [ {{ }} ] -->
-<input type="text" name="player1_simbol" ng-model="players[0].playerSimbol"/><br/>
-<label for="player2_simbol">Player 2 symbol :</label>
-<input type="text" name="player2_simbol" ng-model="players[1].playerSimbol"/>
+<h4>Player 1</h4> 
+	<label for="player1_simbol">Symbol : </label>
+	<!-- Two way binding [ng-model], One way binding [ {{ }} ] -->
+	<input type="text" name="player1_simbol" ng-model="players[0].playerSimbol"/><br/>
+
+	<label for="player1_colour">Colour : </label>
+	<!-- we pass an argument to the filter function by using :arg_val after filter -->
+	<select name="player1_colour" ng-model="players[0].playerColour.color"  ng-options="c as c for c in colours | excludeColour:1"> </select>
+		
+
+<hr/>
+
+<h4>Player 2</h4>
+	<label for="player2_simbol">Symbol :</label>
+	<input type="text" name="player2_simbol" ng-model="players[1].playerSimbol"/> <br/>
+
+	<label for="player2_colour">Colour : </label>
+	<select name="player1_colour" ng-model="players[1].playerColour.color"  ng-options="c as c for c in colours  | excludeColour:0 "> </select>
+		
